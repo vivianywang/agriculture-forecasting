@@ -48,3 +48,11 @@ TRAILING_WINDOW = 3
 YIELD_COLUMN = "wheat_yield_bu_ac"
 TEMP_COLUMN = "mean_temp_c"
 PRECIP_COLUMN = "total_precip_mm"
+
+TEST_YEARS = 3
+TEST_YEAR_START = None
+MODELS_DIR = BASE_DIR / "models"
+MODEL_PATH = MODELS_DIR / "wheat_yield_xgb.json"
+FEATURE_SCHEMA_PATH = MODELS_DIR / "feature_columns.json"
+
+TREND_PARAMS_PATH = MODELS_DIR / "trend_params.json"

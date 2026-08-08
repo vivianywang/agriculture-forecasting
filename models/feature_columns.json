@@ -1,0 +1,27 @@
+{
+  "feature_columns": [
+    "mean_temp_c",
+    "total_precip_mm",
+    "frost_days",
+    "heat_days",
+    "growing_degree_days",
+    "gs_max_temp",
+    "gs_min_temp",
+    "gs_total_rain",
+    "gs_total_snow",
+    "gs_heat_deg_days",
+    "gs_cool_deg_days",
+    "gs_days",
+    "prior_year_yield",
+    "yield_3yr_avg",
+    "year_trend",
+    "precip_anomaly",
+    "temp_anomaly",
+    "province_AB",
+    "province_MB",
+    "province_ON",
+    "province_QC",
+    "province_SK"
+  ],
+  "target_column": "residual"
+}
