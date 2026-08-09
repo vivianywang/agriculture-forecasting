@@ -2,3 +2,5 @@ requests>=2.31
 pandas>=2.0
 xgboost>=2.0
 scikit-learn>=1.4
+fastapi>=0.110
+uvicorn[standard]>=0.29

@@ -56,3 +56,6 @@ MODEL_PATH = MODELS_DIR / "wheat_yield_xgb.json"
 FEATURE_SCHEMA_PATH = MODELS_DIR / "feature_columns.json"
 
 TREND_PARAMS_PATH = MODELS_DIR / "trend_params.json"
+
+CITY_LOOKUP_PATH = RAW_DATA_DIR / "city_to_province.csv"
+BU_AC_TO_T_HA = 0.0673
