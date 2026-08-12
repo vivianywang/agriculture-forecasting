@@ -110,6 +110,8 @@ class PredictionEngine:
 
         crop_health_score = max(0, min(100, round(100 - overall_score * 20 - abs(precip_anomaly) * 0.2)))
 
+        recommendation = self.build_recommendation(drought_risk, frost_risk, heat_risk)
+
         return {
             "city": city,
             "province": province,
@@ -121,9 +123,34 @@ class PredictionEngine:
             "heat_stress_risk": heat_risk,
             "overall_risk": overall_risk,
             "crop_health_score": crop_health_score,
+            "recommendation": recommendation,
             "weather_basis_year": int(latest["year"]),
             "weather_basis_note": (
                 f"Prediction uses {int(latest['year'])} growing-season weather as a stand-in "
                 "for current conditions; live weather integration is a Day 10 item."
             ),
         }
+
+    def build_recommendation(self, drought_risk, frost_risk, heat_risk):
+        lines = []
+
+        if drought_risk == "High":
+            lines.append("Precipitation is well below the historical average for this region; monitor soil moisture closely.")
+        elif drought_risk == "Moderate":
+            lines.append("Precipitation is somewhat below average; keep an eye on soil moisture.")
+        else:
+            lines.append("Rainfall is near or above the historical average for this region.")
+
+        if frost_risk == "High":
+            lines.append("Frost-day counts are elevated; factor this into planting and variety timing.")
+        elif frost_risk == "Moderate":
+            lines.append("Some frost risk is present; monitor forecasts around planting.")
+        else:
+            lines.append("No significant frost risk indicated.")
+
+        if heat_risk == "High":
+            lines.append("Elevated heat-stress days may affect yield during flowering; monitor conditions closely.")
+        elif heat_risk == "Moderate":
+            lines.append("Some heat-stress days are present; watch conditions during flowering.")
+
+        return " ".join(lines)

@@ -59,3 +59,5 @@ TREND_PARAMS_PATH = MODELS_DIR / "trend_params.json"
 
 CITY_LOOKUP_PATH = RAW_DATA_DIR / "city_to_province.csv"
 BU_AC_TO_T_HA = 0.0673
+
+API_BASE_URL = "http://127.0.0.1:8000"
