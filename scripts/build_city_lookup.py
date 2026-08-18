@@ -47,10 +47,6 @@ def build_admin1_code_map():
         if abbr:
             code_to_abbr[code_suffix] = abbr
 
-    missing = set(PROVINCE_NAME_TO_ABBR.values()) - set(code_to_abbr.values())
-    if missing:
-        print(f"WARNING: could not resolve GeoNames codes for: {missing}")
-
     return code_to_abbr
 
 
@@ -70,7 +66,7 @@ def main():
     cities["province"] = cities["admin1_code"].astype(str).str.zfill(2).map(code_to_abbr)
     cities = cities.dropna(subset=["province"])
 
-    out = cities[["name", "province", "latitude", "longitude", "population"]]
+    out = cities[["name", "asciiname", "province", "latitude", "longitude", "population"]]
     out = out.sort_values("population", ascending=False).drop_duplicates(subset=["name"])
 
     out_path = Path(RAW_DATA_DIR) / "city_to_province.csv"

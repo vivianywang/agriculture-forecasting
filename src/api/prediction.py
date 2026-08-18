@@ -29,7 +29,11 @@ class PredictionEngine:
         self.merged_df = pd.read_csv(MERGED_DATASET_PATH)
 
         self.city_lookup = pd.read_csv(CITY_LOOKUP_PATH)
-        self.city_lookup["name_upper"] = self.city_lookup["name"].str.upper()
+        self.city_lookup["name_upper"] = self.city_lookup["name"].fillna("").str.upper()
+        if "asciiname" in self.city_lookup.columns:
+            self.city_lookup["asciiname_upper"] = self.city_lookup["asciiname"].fillna("").str.upper()
+        else:
+            self.city_lookup["asciiname_upper"] = ""
 
         with open(FEATURE_SCHEMA_PATH) as f:
             self.feature_columns = json.load(f)["feature_columns"]
@@ -45,7 +49,12 @@ class PredictionEngine:
         )
 
     def resolve_province(self, city):
-        match = self.city_lookup[self.city_lookup["name_upper"] == city.strip().upper()]
+        query = city.strip().upper()
+        if not query:
+            return None
+        match = self.city_lookup[
+            (self.city_lookup["name_upper"] == query) | (self.city_lookup["asciiname_upper"] == query)
+        ]
         if match.empty:
             return None
         return match.iloc[0]["province"]
@@ -154,3 +163,35 @@ class PredictionEngine:
             lines.append("Some heat-stress days are present; watch conditions during flowering.")
 
         return " ".join(lines)
+
+    def get_history(self, city):
+        province = self.resolve_province(city)
+        if province is None:
+            raise ValueError(f"City '{city}' not found in lookup table.")
+        if province not in self.trend_params:
+            raise ValueError(
+                f"Province '{province}' is not covered by this model. "
+                f"Supported provinces: {list(self.trend_params.keys())}"
+            )
+
+        history = self.merged_df[self.merged_df["province"] == province].sort_values("year")
+
+        records = []
+        for _, row in history.iterrows():
+            year = pd.to_numeric(row.get("year"), errors="coerce")
+            yield_val = pd.to_numeric(row.get(YIELD_COLUMN), errors="coerce")
+            temp_val = pd.to_numeric(row.get("mean_temp_c"), errors="coerce")
+            precip_val = pd.to_numeric(row.get("total_precip_mm"), errors="coerce")
+
+            if pd.isna(year) or pd.isna(yield_val):
+                continue
+
+            records.append({
+                "year": int(year),
+                "yield_bu_ac": float(yield_val),
+                "yield_t_ha": round(float(yield_val) * BU_AC_TO_T_HA, 2),
+                "mean_temp_c": None if pd.isna(temp_val) else float(temp_val),
+                "total_precip_mm": None if pd.isna(precip_val) else float(precip_val),
+            })
+
+        return {"city": city, "province": province, "history": records}

@@ -29,3 +29,15 @@ def predict(request: PredictionRequest):
         return engine.predict(request.city, request.year)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {e}")
+
+
+@app.get("/history")
+def history(city: str):
+    try:
+        return engine.get_history(city)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {e}")
